@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    environment:
+      NAME: ${NAME}
+      USER: ${USER}
+      PASSWORD: ${PASSWORD}
+      HOST: ${HOST}
+      PORT: ${PORT}
+    command: >
+      sh -c "sleep 10 && python ./data_loading/load_data.py && uvicorn app.main:app --host 0.0.0.0 --port 80"
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${USER}
+      POSTGRES_PASSWORD: ${PASSWORD}
+      POSTGRES_DB: ${NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
